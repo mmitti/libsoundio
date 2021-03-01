@@ -124,11 +124,13 @@ else()
     set(AUDIOUNIT_LIBRARY "")
 endif()
 
+set(WASAPI_LIBRARY "")
 if(ENABLE_WASAPI)
     find_package(WASAPI)
     if(WASAPI_FOUND)
         set(STATUS_WASAPI "OK")
         set(SOUNDIO_HAVE_WASAPI true)
+        set(WASAPI_LIBRARY "Avrt")
     else()
         set(STATUS_WASAPI "not found")
         set(SOUNDIO_HAVE_WASAPI false)
@@ -194,6 +196,7 @@ set(LIBSOUNDIO_LIBS
     ${COREAUDIO_LIBRARY}
     ${COREFOUNDATION_LIBRARY}
     ${AUDIOUNIT_LIBRARY}
+    ${WASAPI_LIBRARY}
     ${CMAKE_THREAD_LIBS_INIT}
 )
 

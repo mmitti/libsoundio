@@ -8,6 +8,11 @@
 #ifndef SOUNDIO_SOUNDIO_PRIVATE_H
 #define SOUNDIO_SOUNDIO_PRIVATE_H
 
+#ifdef _MSC_VER
+#define __attribute__(x)
+#define sleep(seconds) (Sleep(seconds*1000))
+#endif
+
 #include "soundio_internal.h"
 #include "config.h"
 #include "list.h"
