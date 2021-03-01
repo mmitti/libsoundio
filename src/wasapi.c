@@ -1926,14 +1926,19 @@ static int outstream_do_open(struct SoundIoPrivate *si, struct SoundIoOutStreamP
         if (FAILED(hr = IAudioClient_GetMixFormat(osw->audio_client, (WAVEFORMATEX **)&mix_format))) {
             return SoundIoErrorOpeningDevice;
         }
+
+        // from https://github.com/erez-o/miniaudio/blob/master/miniaudio.h
+        // shared mode and resample cause invalid flag error.
+        // so we force update sample rate as mix_format
+        outstream->sample_rate = mix_format->Format.nSamplesPerSec;
         wave_format.Format.nSamplesPerSec = (DWORD)outstream->sample_rate;
-        osw->need_resample = (mix_format->Format.nSamplesPerSec != wave_format.Format.nSamplesPerSec);
+        osw->need_resample = false;// (mix_format->Format.nSamplesPerSec != wave_format.Format.nSamplesPerSec);
         CoTaskMemFree(mix_format);
         mix_format = NULL;
         to_wave_format_layout(&outstream->layout, &wave_format);
         to_wave_format_format(outstream->format, &wave_format);
         complete_wave_format_data(&wave_format);
-        flags = osw->need_resample ? AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM | AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY : 0;
+        flags = 0;// osw->need_resample ? AUDCLNT_STREAMFLAGS_AUTOCONVERTPCM | AUDCLNT_STREAMFLAGS_SRC_DEFAULT_QUALITY : 0;
         if (dev->backend_data.wasapi.iaudio3_available) {
             flags |= AUDCLNT_STREAMFLAGS_EVENTCALLBACK;
             UINT32 default_period, increment, max_period;
